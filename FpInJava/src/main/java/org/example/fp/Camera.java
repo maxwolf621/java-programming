@@ -2,20 +2,18 @@ package org.example.fp;
 
 /**
  * The decorator pattern is powerful, but programmers often hesitate to use it
- * due to the burdensome hierarchy of classes and interfaces
- * <p>
- * Using lambda expression
- * Avoiding creating implementation classes to support the delegate interface
- * By chaining delegates to add behavior
+ *      due to the burdensome hierarchy of classes and interfaces
+ * Use lambda expression
+ *      Avoiding creating implementation classes to support the delegate interface
+ *      By chaining delegates to add behavior
  */
-
 
 import java.awt.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-@SuppressWarnings("unchecked")
+//@SuppressWarnings("unchecked")
 public class Camera {
     private Function<Color, Color> filter;
 
@@ -27,7 +25,8 @@ public class Camera {
 
     //... other functions that use the filter ...
 
-    public void setFilters(final Function<Color, Color>... filters) {
+    @SafeVarargs
+    public final void setFilters(final Function<Color, Color>... filters) {
         filter =
                 Stream.of(filters)
                         .reduce((filter, next) -> filter.compose(next))
@@ -40,6 +39,16 @@ public class Camera {
         setFilters();
     }
 
+
+    /**
+     * With this filter combination,
+     * the input color goes through a series of transformations or filtering;
+     * first it passes through the bright filter, which brightens
+     * the shades, then it goes through the dark filter, which makes the colors
+     * darker again, as we can see from the output.
+     * @param args
+     *
+     */
     public static void main(final String[] args) {
         final Camera camera = new Camera();
         final Consumer<String> printCaptured = (filterInfo) ->
@@ -50,24 +59,10 @@ public class Camera {
                         )
                 );
 
-//        System.out.println("//" + "START:NOFILTER_OUTPUT");
-//        printCaptured.accept("no filter");
-//        System.out.println("//" + "END:NOFILTER_OUTPUT");
-//
-//        System.out.println("//" + "START:BRIGHT_OUTPUT");
-//        camera.setFilters(Color::brighter);
-//        printCaptured.accept("brighter filter");
-//        System.out.println("//" + "END:BRIGHT_OUTPUT");
-//
-////        System.out.println("//" + "START:DARK_OUTPUT");
-//        camera.setFilters(Color::darker);
-//        printCaptured.accept("darker filter");
-//        System.out.println("//" + "END:DARK_OUTPUT");
-
-        System.out.println("//" + "START:BOTH_OUTPUT");
+        System.out.println("START:BOTH_OUTPUT");
         camera.setFilters(Color::brighter, Color::darker);
         printCaptured.accept("brighter & darker filter");
-        System.out.println("//" + "END:BOTH_OUTPUT");
+        System.out.println("END:BOTH_OUTPUT");
     }
 
 }
